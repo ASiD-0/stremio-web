@@ -167,19 +167,19 @@ const Intro = ({ queryParams }) => {
     }, [state.termsAccepted]);
     const signup = React.useCallback(() => {
         if (typeof state.email !== 'string' || state.email.length === 0 || !emailRef.current.validity.valid) {
-            dispatch({ type: 'error', error: 'Invalid email' });
+            dispatch({ type: 'error', error: t('INVALID_EMAIL') });
             return;
         }
         if (typeof state.password !== 'string' || state.password.length === 0) {
-            dispatch({ type: 'error', error: 'Invalid password' });
+            dispatch({ type: 'error', error: t('INVALID_PASSWORD') });
             return;
         }
         if (state.password !== state.confirmPassword) {
-            dispatch({ type: 'error', error: 'Passwords do not match' });
+            dispatch({ type: 'error', error: t('PASSWORDS_NOMATCH') });
             return;
         }
         if (!state.termsAccepted) {
-            dispatch({ type: 'error', error: 'You must accept the Terms of Service' });
+            dispatch({ type: 'error', error: t('MUST_ACCEPT_TERMS') });
             return;
         }
         if (!state.privacyPolicyAccepted) {

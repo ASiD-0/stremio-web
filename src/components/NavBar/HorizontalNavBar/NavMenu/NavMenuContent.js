@@ -24,11 +24,12 @@ const NavMenuContent = ({ onClick }) => {
     const [fullscreen, requestFullscreen, exitFullscreen] = useFullscreen();
     const [isIOSPWA, isAndroidPWA] = usePWA();
     const streamingServerWarningDismissed = React.useMemo(() => {
-        return streamingServer.settings !== null && streamingServer.settings.type === 'Ready' || (
-            !isNaN(profile.settings.streamingServerWarningDismissed.getTime()) &&
-            profile.settings.streamingServerWarningDismissed.getTime() > Date.now()
-        );
-    }, [profile.settings, streamingServer.settings]);
+        return streamingServer.state !== null && (streamingServer.state.type === 'Ready' && streamingServer.state.content === 'running')
+            || (
+                !isNaN(profile.settings.streamingServerWarningDismissed.getTime()) &&
+                profile.settings.streamingServerWarningDismissed.getTime() > Date.now()
+            );
+    }, [profile.settings, streamingServer.state]);
     const logoutButtonOnClick = React.useCallback(() => {
         core.transport.dispatch({
             action: 'Ctx',
@@ -41,12 +42,12 @@ const NavMenuContent = ({ onClick }) => {
         try {
             const clipboardText = await navigator.clipboard.readText();
             createTorrentFromMagnet(clipboardText);
-        } catch(e) {
+        } catch (e) {
             console.error(e);
         }
     }, []);
     return (
-        <div className={classnames(styles['nav-menu-container'], 'animation-fade-in', { [styles['with-warning']]: !streamingServerWarningDismissed } )} onClick={onClick}>
+        <div className={classnames(styles['nav-menu-container'], 'animation-fade-in', { [styles['with-warning']]: !streamingServerWarningDismissed })} onClick={onClick}>
             <div className={styles['user-info-container']}>
                 <div
                     className={styles['avatar-container']}
@@ -81,34 +82,34 @@ const NavMenuContent = ({ onClick }) => {
                     null
             }
             <div className={styles['nav-menu-section']}>
-                <Button className={styles['nav-menu-option-container']} title={ t('SETTINGS') } href={'#/settings'}>
+                <Button className={styles['nav-menu-option-container']} title={t('SETTINGS')} href={'#/settings'}>
                     <Icon className={styles['icon']} name={'settings'} />
-                    <div className={styles['nav-menu-option-label']}>{ t('SETTINGS') }</div>
+                    <div className={styles['nav-menu-option-label']}>{t('SETTINGS')}</div>
                 </Button>
-                <Button className={styles['nav-menu-option-container']} title={ t('ADDONS') } href={'#/addons'}>
+                <Button className={styles['nav-menu-option-container']} title={t('ADDONS')} href={'#/addons'}>
                     <Icon className={styles['icon']} name={'addons-outline'} />
-                    <div className={styles['nav-menu-option-label']}>{ t('ADDONS') }</div>
+                    <div className={styles['nav-menu-option-label']}>{t('ADDONS')}</div>
                 </Button>
-                <Button className={styles['nav-menu-option-container']} title={ t('PLAY_URL_MAGNET_LINK') } onClick={onPlayMagnetLinkClick}>
+                <Button className={styles['nav-menu-option-container']} title={t('PLAY_URL_MAGNET_LINK')} onClick={onPlayMagnetLinkClick}>
                     <Icon className={styles['icon']} name={'magnet-link'} />
-                    <div className={styles['nav-menu-option-label']}>{ t('PLAY_URL_MAGNET_LINK') }</div>
+                    <div className={styles['nav-menu-option-label']}>{t('PLAY_URL_MAGNET_LINK')}</div>
                 </Button>
-                <Button className={styles['nav-menu-option-container']} title={ t('HELP_FEEDBACK') } href={'https://stremio.zendesk.com/'} target={'_blank'}>
+                <Button className={styles['nav-menu-option-container']} title={t('HELP_FEEDBACK')} href={'https://stremio.zendesk.com/'} target={'_blank'}>
                     <Icon className={styles['icon']} name={'help'} />
-                    <div className={styles['nav-menu-option-label']}>{ t('HELP_FEEDBACK') }</div>
+                    <div className={styles['nav-menu-option-label']}>{t('HELP_FEEDBACK')}</div>
                 </Button>
             </div>
             <div className={styles['nav-menu-section']}>
-                <Button className={styles['nav-menu-option-container']} title={ t('TERMS_OF_SERVICE') } href={'https://www.stremio.com/tos'} target={'_blank'}>
-                    <div className={styles['nav-menu-option-label']}>{ t('TERMS_OF_SERVICE') }</div>
+                <Button className={styles['nav-menu-option-container']} title={t('TERMS_OF_SERVICE')} href={'https://www.stremio.com/tos'} target={'_blank'}>
+                    <div className={styles['nav-menu-option-label']}>{t('TERMS_OF_SERVICE')}</div>
                 </Button>
-                <Button className={styles['nav-menu-option-container']} title={ t('PRIVACY_POLICY') } href={'https://www.stremio.com/privacy'} target={'_blank'}>
-                    <div className={styles['nav-menu-option-label']}>{ t('PRIVACY_POLICY') }</div>
+                <Button className={styles['nav-menu-option-container']} title={t('PRIVACY_POLICY')} href={'https://www.stremio.com/privacy'} target={'_blank'}>
+                    <div className={styles['nav-menu-option-label']}>{t('PRIVACY_POLICY')}</div>
                 </Button>
                 {
                     profile.auth !== null ?
-                        <Button className={styles['nav-menu-option-container']} title={ t('USER_PANEL') } href={'https://www.stremio.com/acc-settings'} target={'_blank'}>
-                            <div className={styles['nav-menu-option-label']}>{ t('USER_PANEL') }</div>
+                        <Button className={styles['nav-menu-option-container']} title={t('USER_PANEL')} href={'https://www.stremio.com/acc-settings'} target={'_blank'}>
+                            <div className={styles['nav-menu-option-label']}>{t('USER_PANEL')}</div>
                         </Button>
                         :
                         null

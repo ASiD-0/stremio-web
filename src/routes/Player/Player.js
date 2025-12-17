@@ -37,7 +37,7 @@ const Player = ({ urlParams, queryParams }) => {
         return queryParams.has('forceTranscoding');
     }, [queryParams]);
     const profile = useProfile();
-    const [player, videoParamsChanged, timeChanged, seek, pausedChanged, ended, nextVideo] = usePlayer(urlParams);
+    const [player, videoParamsChanged, timeChanged, seek, pausedChanged, ended, nextVideo, streamStateChanged] = usePlayer(urlParams);
     const [settings, updateSettings] = useSettings();
     const streamingServer = useStreamingServer();
     const statistics = useStatistics(player, streamingServer);
@@ -222,6 +222,7 @@ const Player = ({ urlParams, queryParams }) => {
 
     const onPlaybackSpeedChanged = React.useCallback((rate) => {
         video.setProp('playbackSpeed', rate);
+        setStreamState({ ...streamState, playbackSpeed: rate });
     }, []);
 
     const onSubtitlesTrackSelected = React.useCallback((id) => {
@@ -237,6 +238,8 @@ const Player = ({ urlParams, queryParams }) => {
     }, []);
 
     const onExtraSubtitlesDelayChanged = React.useCallback((delay) => {
+        setStreamState({ ...streamState, subtitleDelay: delay });
+
         video.setProp('extraSubtitlesDelay', delay);
     }, []);
 
@@ -252,6 +255,7 @@ const Player = ({ urlParams, queryParams }) => {
 
     const onSubtitlesSizeChanged = React.useCallback((size) => {
         updateSettings({ subtitlesSize: size });
+        setStreamState({ ...streamState, subtitlesSize: size });
     }, [updateSettings]);
 
     const onUpdateSubtitlesSize = React.useCallback((delta) => {
@@ -262,6 +266,7 @@ const Player = ({ urlParams, queryParams }) => {
 
     const onSubtitlesOffsetChanged = React.useCallback((offset) => {
         updateSettings({ subtitlesOffset: offset });
+        setStreamState({ ...streamState, subtitleOffset: offset });
     }, [updateSettings]);
 
     const onDismissNextVideoPopup = React.useCallback(() => {
@@ -466,7 +471,7 @@ const Player = ({ urlParams, queryParams }) => {
             } else if (extraSubtitlesTrack && extraSubtitlesTrack.id) {
                 onExtraSubtitlesTrackSelected(extraSubtitlesTrack.id);
                 defaultSubtitlesSelected.current = true;
-                setStreamState({ ...streamState, subtitlesTrack: { id: extraSubtitlesTrack.id, embedded: false, language: extraSubtitlesTrack.lang } });
+                setStreamState({ ...streamState, subtitleTrack: { id: extraSubtitlesTrack.id, embedded: false, language: extraSubtitlesTrack.lang } });
             }
         }
     }, [video.state.subtitlesTracks, video.state.extraSubtitlesTracks]);
@@ -479,6 +484,7 @@ const Player = ({ urlParams, queryParams }) => {
             if (audioTrack && audioTrack.id) {
                 onAudioTrackSelected(audioTrack.id);
                 defaultAudioTrackSelected.current = true;
+                setStreamState({ ...streamState, audioTrack: { id: audioTrack.id, language: audioTrack.lang } });
             }
         }
     }, [video.state.audioTracks]);
@@ -511,6 +517,10 @@ const Player = ({ urlParams, queryParams }) => {
             closeSpeedMenu();
         }
     }, [video.state.playbackSpeed]);
+
+    React.useEffect(() => {
+        streamStateChanged(streamState);
+    }, [streamState]);
 
     React.useEffect(() => {
         const toastFilter = (item) => item?.dataset?.type === 'CoreEvent';

@@ -68,6 +68,8 @@ const Player = ({ urlParams, queryParams }) => {
     const [nextVideoPopupOpen, openNextVideoPopup, closeNextVideoPopup] = useBinaryState(false);
     const [sideDrawerOpen, , closeSideDrawer, toggleSideDrawer] = useBinaryState(false);
 
+    const [streamState, setStreamState] = React.useState(player.streamState ?? {});
+
     const menusOpen = React.useMemo(() => {
         return optionsMenuOpen || subtitlesMenuOpen || audioMenuOpen || speedMenuOpen || statisticsMenuOpen || sideDrawerOpen;
     }, [optionsMenuOpen, subtitlesMenuOpen, audioMenuOpen, speedMenuOpen, statisticsMenuOpen, sideDrawerOpen]);
@@ -454,16 +456,17 @@ const Player = ({ urlParams, queryParams }) => {
                 defaultSubtitlesSelected.current = true;
                 return;
             }
-
             const subtitlesTrack = findTrackByLang(video.state.subtitlesTracks, settings.subtitlesLanguage);
             const extraSubtitlesTrack = findTrackByLang(video.state.extraSubtitlesTracks, settings.subtitlesLanguage);
 
             if (subtitlesTrack && subtitlesTrack.id) {
                 onSubtitlesTrackSelected(subtitlesTrack.id);
                 defaultSubtitlesSelected.current = true;
+                setStreamState({ ...streamState, subtitlesTrack: { id: subtitlesTrack.id, embedded: true, language: subtitlesTrack.lang } });
             } else if (extraSubtitlesTrack && extraSubtitlesTrack.id) {
                 onExtraSubtitlesTrackSelected(extraSubtitlesTrack.id);
                 defaultSubtitlesSelected.current = true;
+                setStreamState({ ...streamState, subtitlesTrack: { id: extraSubtitlesTrack.id, embedded: false, language: extraSubtitlesTrack.lang } });
             }
         }
     }, [video.state.subtitlesTracks, video.state.extraSubtitlesTracks]);
@@ -481,6 +484,7 @@ const Player = ({ urlParams, queryParams }) => {
     }, [video.state.audioTracks]);
 
     React.useEffect(() => {
+        // TODO: load from stream item state
         defaultSubtitlesSelected.current = false;
         defaultAudioTrackSelected.current = false;
         nextVideoPopupDismissed.current = false;
@@ -568,7 +572,7 @@ const Player = ({ urlParams, queryParams }) => {
         const videoId = player.selected ? player.selected?.streamRequest?.path?.id : null;
         const video = metaItem ? metaItem.videos.find(({ id }) => id === videoId) : null;
 
-        const videoInfo = video && video.season && video.episode ? ` (${video.season}x${video.episode})`: null;
+        const videoInfo = video && video.season && video.episode ? ` (${video.season}x${video.episode})` : null;
         const videoTitle = video ? `${video.title}${videoInfo}` : null;
         const metaTitle = metaItem ? metaItem.name : null;
         const imageUrl = metaItem ? metaItem.logo : null;

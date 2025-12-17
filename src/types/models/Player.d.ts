@@ -41,6 +41,7 @@ type Player = {
         streamRequest: ResourceRequest,
         subtitlesPath: ResourceRequestPath,
     } | null,
+    stream_state: StreamItemState | null,
     seriesInfo: SeriesInfo | null,
     subtitles: Subtitle[],
     title: string | null,

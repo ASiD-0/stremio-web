@@ -6,6 +6,7 @@ declare const usePlayer: (urlParams: UrlParams) => [
     pausedChanged: (paused: boolean) => void, () => void, () => void,
     ended: () => void,
     nextVideo: () => void,
+    streamStateChanged: (state: StreamItemState ) => void,
 ];
 
 export = usePlayer;

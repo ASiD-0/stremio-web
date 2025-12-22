@@ -24,9 +24,9 @@ const NavMenuContent = ({ onClick }) => {
     const [fullscreen, requestFullscreen, exitFullscreen] = useFullscreen();
     const [isIOSPWA, isAndroidPWA] = usePWA();
     const streamingServerWarningDismissed = React.useMemo(() => {
-        return streamingServer.state !== null && (streamingServer.state.type === 'Ready' && streamingServer.state.content === 'running')
+        return (streamingServer.state !== null && streamingServer.state.type === 'Ready' && streamingServer.state.content === 'running')
             || (
-                !isNaN(profile.settings.streamingServerWarningDismissed.getTime()) &&
+                isNaN(profile.settings.streamingServerWarningDismissed.getTime()) ||
                 profile.settings.streamingServerWarningDismissed.getTime() > Date.now()
             );
     }, [profile.settings, streamingServer.state]);

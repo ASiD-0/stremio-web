@@ -17,6 +17,7 @@ const useAnimationFrame = require('./useAnimationFrame');
 const useBinaryState = require('./useBinaryState');
 const { default: useFullscreen } = require('./useFullscreen');
 const { default: useInterval } = require('./useInterval');
+const { default: useDiscord } = require('./useDiscord');
 const useLiveRef = require('./useLiveRef');
 const useModelState = require('./useModelState');
 const useNotifications = require('./useNotifications');
@@ -55,6 +56,7 @@ module.exports = {
     useBinaryState,
     useFullscreen,
     useInterval,
+    useDiscord,
     useLiveRef,
     useModelState,
     useNotifications,

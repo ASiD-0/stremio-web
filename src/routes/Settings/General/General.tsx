@@ -2,7 +2,7 @@ import React, { forwardRef, useCallback, useEffect, useMemo, useState } from 're
 import { useTranslation } from 'react-i18next';
 import { Button, MultiselectMenu, Toggle } from 'stremio/components';
 import { useServices } from 'stremio/services';
-import { usePlatform, useToast } from 'stremio/common';
+import { usePlatform, useToast, useDiscord } from 'stremio/common';
 import { Section, Option, Link } from '../components';
 import User from './User';
 import useDataExport from './useDataExport';
@@ -18,6 +18,7 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
     const { core, shell } = useServices();
     const platform = usePlatform();
     const toast = useToast();
+    const { available: discordAvailable, connected: isDiscordConnected, connect: connectDiscord, disconnect: disconnectDiscord } = useDiscord();
     const [dataExport, loadDataExport] = useDataExport();
 
     const {
@@ -68,6 +69,14 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
             });
         }
     }, [isTraktAuthenticated, profile.auth]);
+
+    const onToggleDiscord = useCallback(() => {
+        if (isDiscordConnected) {
+            disconnectDiscord();
+        } else {
+            connectDiscord();
+        }
+    }, [isDiscordConnected, connectDiscord, disconnectDiscord]);
 
     useEffect(() => {
         if (dataExport.exportUrl) {
@@ -142,6 +151,14 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
                     {isTraktAuthenticated ? t('LOG_OUT') : t('SETTINGS_TRAKT_AUTHENTICATE')}
                 </Button>
             </Option>
+            {
+                discordAvailable &&
+                    <Option className={styles['discord-container']} icon={'discord'} label={t('SETTINGS_DISCORD')}>
+                        <Button className={'button'} title={isDiscordConnected ? t('DISCONNECT') : t('SETTINGS_DISCORD_CONNECT')} tabIndex={-1} onClick={onToggleDiscord}>
+                            {isDiscordConnected ? t('DISCONNECT') : t('SETTINGS_DISCORD_CONNECT')}
+                        </Button>
+                    </Option>
+            }
         </Section>
 
         <Section>

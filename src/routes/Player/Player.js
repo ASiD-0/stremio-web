@@ -8,7 +8,7 @@ const langs = require('langs');
 const { useTranslation } = require('react-i18next');
 const { useRouteFocused } = require('stremio-router');
 const { useServices } = require('stremio/services');
-const { onFileDrop, useSettings, useProfile, useFullscreen, useBinaryState, useToast, useStreamingServer, withCoreSuspender, CONSTANTS, useShell, usePlatform } = require('stremio/common');
+const { onFileDrop, useSettings, useProfile, useFullscreen, useBinaryState, useToast, useStreamingServer, withCoreSuspender, CONSTANTS, useShell, usePlatform, useDiscord } = require('stremio/common');
 const { HorizontalNavBar, Transition, ContextMenu } = require('stremio/components');
 const BufferingLoader = require('./BufferingLoader');
 const VolumeChangeIndicator = require('./VolumeChangeIndicator');
@@ -45,6 +45,7 @@ const Player = ({ urlParams, queryParams }) => {
     const routeFocused = useRouteFocused();
     const platform = usePlatform();
     const toast = useToast();
+    const discord = useDiscord();
 
     const [seeking, setSeeking] = React.useState(false);
 
@@ -549,6 +550,22 @@ const Player = ({ urlParams, queryParams }) => {
             onPauseRequested();
         }
     }, [settings.pauseOnMinimize, shell.windowClosed, shell.windowHidden]);
+
+    React.useEffect(() => {
+        if (!discord.connected || !discord.available) return;
+
+        const state = video.state.paused ? 'Paused' : 'Watching';
+
+        const startTimestamp = !video.state.paused && video.state.time !== null && video.state.duration !== null
+            ? Math.floor((Date.now() / 1000) - video.state.time)
+            : null;
+
+        discord.setActivity(state, player?.title, player?.metaItem?.poster, startTimestamp);
+
+        return () => {
+            discord.clearActivity();
+        };
+    }, [discord.connected, discord.available, player?.title, player?.metaItem, video.state]);
 
     // Media Session PlaybackState
     React.useEffect(() => {

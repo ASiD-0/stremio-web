@@ -4,7 +4,7 @@ require('spatial-navigation-polyfill');
 const React = require('react');
 const { useTranslation } = require('react-i18next');
 const { Router } = require('stremio-router');
-const { Core, Shell, Chromecast, DragAndDrop, KeyboardShortcuts, ServicesProvider } = require('stremio/services');
+const { Core, Shell, Chromecast, Discord, DragAndDrop, KeyboardShortcuts, ServicesProvider } = require('stremio/services');
 const { NotFound } = require('stremio/routes');
 const { FileDropProvider, PlatformProvider, ToastProvider, TooltipProvider, ShortcutsProvider, CONSTANTS, withCoreSuspender, useShell, useBinaryState } = require('stremio/common');
 const ServicesToaster = require('./ServicesToaster');
@@ -33,6 +33,7 @@ const App = () => {
         return {
             core,
             shell: new Shell(),
+            discord: new Discord(),
             chromecast: new Chromecast(),
             keyboardShortcuts: new KeyboardShortcuts(),
             dragAndDrop: new DragAndDrop({ core })
@@ -95,6 +96,8 @@ const App = () => {
         services.chromecast.start();
         services.keyboardShortcuts.start();
         services.dragAndDrop.start();
+        services.discord.init(services.shell);
+
         window.services = services;
         return () => {
             services.core.stop();

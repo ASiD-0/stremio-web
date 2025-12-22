@@ -73,8 +73,26 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
     const onToggleDiscord = useCallback(() => {
         if (isDiscordConnected) {
             disconnectDiscord();
+            core.transport.dispatch({
+                action: 'Ctx',
+                args: {
+                    action: 'UpdateSettings',
+                    args: {
+                        discordRpcEnabled: false
+                    }
+                }
+            });
         } else {
             connectDiscord();
+            core.transport.dispatch({
+                action: 'Ctx',
+                args: {
+                    action: 'UpdateSettings',
+                    args: {
+                        discordRpcEnabled: true
+                    }
+                }
+            });
         }
     }, [isDiscordConnected, connectDiscord, disconnectDiscord]);
 
@@ -83,6 +101,12 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
             platform.openExternal(dataExport.exportUrl);
         }
     }, [dataExport.exportUrl]);
+
+    useEffect(() => {
+        if (discordAvailable && profile.settings.discordRpcEnabled && !isDiscordConnected) {
+            connectDiscord();
+        }
+    }, [discordAvailable, profile.settings.discordRpcEnabled]);
 
     useEffect(() => {
         if (isTraktAuthenticated && traktAuthStarted) {

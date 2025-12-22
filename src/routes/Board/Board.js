@@ -22,15 +22,15 @@ const Board = () => {
     const profile = useProfile();
     const boardCatalogsOffset = continueWatchingPreview.items.length > 0 ? 1 : 0;
     const scrollContainerRef = React.useRef();
-
-    const [showStreamingServerWarning, setStreamingServerWarning] = React.useState(true);
-
-    React.useEffect(() => {
-        setStreamingServerWarning(streamingServer.state === null || streamingServer.state.type === 'Err' || (streamingServer.state.type === 'Ready' && streamingServer.state.content === 'notRunning')
-            ? (
+    const showStreamingServerWarning = React.useMemo(() => {
+        return streamingServer.state === null ||
+            streamingServer.state.type === 'Err' ||
+            (streamingServer.state.type === 'Ready' && streamingServer.state.content === 'notRunning') ?
+            (
                 isNaN(profile.settings.streamingServerWarningDismissed.getTime()) ||
-                profile.settings.streamingServerWarningDismissed.getTime() > Date.now())
-            : false);
+                profile.settings.streamingServerWarningDismissed.getTime() < Date.now()
+            )
+            : false;
     }, [profile.settings, streamingServer.state]);
 
     const onVisibleRangeChange = React.useCallback(() => {

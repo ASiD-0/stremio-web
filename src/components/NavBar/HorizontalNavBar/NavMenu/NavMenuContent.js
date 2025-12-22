@@ -23,12 +23,15 @@ const NavMenuContent = ({ onClick }) => {
     const { createTorrentFromMagnet } = useTorrent();
     const [fullscreen, requestFullscreen, exitFullscreen] = useFullscreen();
     const [isIOSPWA, isAndroidPWA] = usePWA();
-    const streamingServerWarningDismissed = React.useMemo(() => {
-        return (streamingServer.state !== null && streamingServer.state.type === 'Ready' && streamingServer.state.content === 'running')
-            || (
+    const showStreamingServerWarning = React.useMemo(() => {
+        return streamingServer.state === null ||
+            streamingServer.state.type === 'Err' ||
+            (streamingServer.state.type === 'Ready' && streamingServer.state.content === 'notRunning') ?
+            (
                 isNaN(profile.settings.streamingServerWarningDismissed.getTime()) ||
-                profile.settings.streamingServerWarningDismissed.getTime() > Date.now()
-            );
+                profile.settings.streamingServerWarningDismissed.getTime() < Date.now()
+            )
+            : false;
     }, [profile.settings, streamingServer.state]);
     const logoutButtonOnClick = React.useCallback(() => {
         core.transport.dispatch({
@@ -47,7 +50,7 @@ const NavMenuContent = ({ onClick }) => {
         }
     }, []);
     return (
-        <div className={classnames(styles['nav-menu-container'], 'animation-fade-in', { [styles['with-warning']]: !streamingServerWarningDismissed })} onClick={onClick}>
+        <div className={classnames(styles['nav-menu-container'], 'animation-fade-in', { [styles['with-warning']]: showStreamingServerWarning })} onClick={onClick}>
             <div className={styles['user-info-container']}>
                 <div
                     className={styles['avatar-container']}

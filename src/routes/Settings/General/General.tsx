@@ -1,13 +1,12 @@
 import React, { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MultiselectMenu, Toggle } from 'stremio/components';
+import { Button } from 'stremio/components';
 import { useServices } from 'stremio/services';
 import { usePlatform, useToast, useDiscord } from 'stremio/common';
 import { Section, Option, Link } from '../components';
 import User from './User';
 import useDataExport from './useDataExport';
 import styles from './General.less';
-import useGeneralOptions from './useGeneralOptions';
 
 type Props = {
     profile: Profile,
@@ -15,18 +14,11 @@ type Props = {
 
 const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
     const { t } = useTranslation();
-    const { core, shell } = useServices();
+    const { core } = useServices();
     const platform = usePlatform();
     const toast = useToast();
     const { available: discordAvailable, connected: isDiscordConnected, connect: connectDiscord, disconnect: disconnectDiscord } = useDiscord();
     const [dataExport, loadDataExport] = useDataExport();
-
-    const {
-        interfaceLanguageSelect,
-        quitOnCloseToggle,
-        escExitFullscreenToggle,
-        hideSpoilersToggle,
-    } = useGeneralOptions(profile);
 
     const [traktAuthStarted, setTraktAuthStarted] = useState(false);
 
@@ -183,39 +175,6 @@ const General = forwardRef<HTMLDivElement, Props>(({ profile }: Props, ref) => {
                         </Button>
                     </Option>
             }
-        </Section>
-
-        <Section>
-            <Option label={'SETTINGS_UI_LANGUAGE'}>
-                <MultiselectMenu
-                    className={'multiselect'}
-                    {...interfaceLanguageSelect}
-                />
-            </Option>
-            {
-                shell.active &&
-                    <Option label={'SETTINGS_QUIT_ON_CLOSE'}>
-                        <Toggle
-                            tabIndex={-1}
-                            {...quitOnCloseToggle}
-                        />
-                    </Option>
-            }
-            {
-                shell.active &&
-                    <Option label={'SETTINGS_FULLSCREEN_EXIT'}>
-                        <Toggle
-                            tabIndex={-1}
-                            {...escExitFullscreenToggle}
-                        />
-                    </Option>
-            }
-            <Option label={'SETTINGS_BLUR_UNWATCHED_IMAGE'}>
-                <Toggle
-                    tabIndex={-1}
-                    {...hideSpoilersToggle}
-                />
-            </Option>
         </Section>
     </>;
 });

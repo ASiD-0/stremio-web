@@ -224,7 +224,21 @@ module.exports = (env, argv) => ({
             new WorkboxPlugin.GenerateSW({
                 maximumFileSizeToCacheInBytes: 20000000,
                 clientsClaim: true,
-                skipWaiting: true
+                skipWaiting: true,
+                runtimeCaching: [
+                    {
+                        urlPattern: /^https:\/\/.*/,
+                        handler: 'NetworkFirst',
+                        options: {
+                            cacheName: 'cross-origin-requests',
+                            networkTimeoutSeconds: 10,
+                            expiration: {
+                                maxEntries: 200,
+                                maxAgeSeconds: 60 * 60,
+                            },
+                        },
+                    },
+                ],
             }),
         new CopyWebpackPlugin({
             patterns: [

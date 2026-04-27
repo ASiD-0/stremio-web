@@ -5,7 +5,6 @@ const { PlatformProvider, usePlatform } = require('./Platform');
 const { ToastProvider, useToast } = require('./Toast');
 const { TooltipProvider, Tooltip } = require('./Tooltips');
 const { ShortcutsProvider, useShortcuts, onShortcut } = require('./Shortcuts');
-const comparatorWithPriorities = require('./comparatorWithPriorities');
 const CONSTANTS = require('./CONSTANTS');
 const { withCoreSuspender, useCoreSuspender } = require('./CoreSuspender');
 const getVisibleChildrenRange = require('./getVisibleChildrenRange');
@@ -27,6 +26,7 @@ const { default: useSettings } = require('./useSettings');
 const { default: useShell } = require('./useShell');
 const useStreamingServer = require('./useStreamingServer');
 const { default: useTimeout } = require('./useTimeout');
+const { default: usePlayUrl } = require('./usePlayUrl');
 const useTorrent = require('./useTorrent');
 const useTranslate = require('./useTranslate');
 const { default: useOrientation } = require('./useOrientation');
@@ -44,7 +44,6 @@ module.exports = {
     useToast,
     TooltipProvider,
     Tooltip,
-    comparatorWithPriorities,
     CONSTANTS,
     withCoreSuspender,
     useCoreSuspender,
@@ -67,6 +66,7 @@ module.exports = {
     useShell,
     useStreamingServer,
     useTimeout,
+    usePlayUrl,
     useTorrent,
     useTranslate,
     useOrientation,
